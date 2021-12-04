@@ -4,15 +4,15 @@
 
 all: docs/_build/report.html
 
-# download data
+# download data (Khalid)
 data/raw/survey_results_public.csv: src/download_data.py
 	python src/download_data.py --url=https://info.stackoverflowsolutions.com/rs/719-EMH-566/images/stack-overflow-developer-survey-2019.zip --out_dir=data/raw
 
-# pre-process data
+# pre-process data (Sanchit)
 data/processed/training.csv: src/preprocessing.R data/raw/survey_results_public.csv
 	Rscript src/preprocessing.R --input=data/raw/survey_results_public.csv --out_dir=data/processed 
 
-# run eda report
+# run eda report (Jiwei)
 results/edu_plot.png: src/eda.py data/processed/training.csv
 	python src/eda.py --train=data/processed/training.csv --out_dir=results/
 results/role_plot.png: src/eda.py data/processed/training.csv
@@ -24,7 +24,7 @@ results/code_years_plot.png: src/eda.py data/processed/training.csv
 results/salary_density_plot.png: src/eda.py data/processed/training.csv
 	python src/eda.py --train=data/processed/training.csv --out_dir=results/
 
-# modelling
+# modelling (Vera and Khalid)
 results/best_model_pipe.joblib: src/salary_prediction_model.py data/processed/training.csv data/processed/test.csv
 	python src/salary_prediction_model.py --train=data/processed/training.csv --out_dir=results --test=data/processed/test.csv
 results/test_result.joblib: src/salary_prediction_model.py data/processed/training.csv data/processed/test.csv
@@ -32,7 +32,7 @@ results/test_result.joblib: src/salary_prediction_model.py data/processed/traini
 results/alpha-tuning.png: src/salary_prediction_model.py data/processed/training.csv data/processed/test.csv
 	python src/salary_prediction_model.py --train=data/processed/training.csv --out_dir=results --test=data/processed/test.csv
 
-# render report
+# render report (Vera)
 docs/_build/report.html: docs/report.ipynb docs/references.bib results/best_model_pipe.joblib results/test_result.joblib results/alpha-tuning.png results/edu_plot.png results/role_plot.png results/language_plot.png results/code_years_plot.png results/salary_density_plot.png
 	jupyter-book build docs
 
